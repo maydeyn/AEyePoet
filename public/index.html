@@ -1,20 +1,114 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="./javascripts/track.js"></script>
+    <meta charset="utf-8">
+    <title>tracking.js - color with camera</title>
+    <link rel="stylesheet" href="./stylesheets/style.css">
 
-    <title>AEye Poet</title>
+    <script src="../node_modules/tracking/build/tracking.js"></script>
+    <script src="../node_modules/dat.gui/build/dat.gui.min.js"></script>
+    <script src="../tracking.js-master/examples/assets/stats.min.js"></script>
+    <script src="../tracking.js-master/examples/assets/color_camera_gui.js"></script>
+    <script src="../tracking.js-master/build/data/eye.js"></script>
 </head>
 
 <body>
-    <video id="video" width="400" height="300" preload autoplay loop muted></video>
-    <canvas id="canvas" width="400" height="300"></canvas>
-    <!-- <script src="tracking.js/build/data/face.js"></script>
-    <script src="tracking.js/build/data/eye.js"></script> -->
+
+    <div class="demo-frame">
+        <div class="demo-container">
+            <video id="video" width="600" height="450" preload autoplay loop muted controls></video>
+            <canvas id="canvas" width="600" height="450"></canvas>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function () {
+            navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(function (stream) {
+                document.getElementById('video').srcObject = stream;
+            });
+
+            var canvas = document.getElementById('canvas');
+            var context = canvas.getContext('2d');
+
+            var tracker = new tracking.ColorTracker();
+            // BLUE
+            tracking.ColorTracker.registerColor("blue", function (r, g, b) {
+                if (r < 161 && g > 202 && b < 241) {
+                    return true;
+                    console.log('blue');
+
+                }
+                return false;
+            });
+
+            // BROWN 56, 16, 28
+            tracking.ColorTracker.registerColor("brown", function (r, g, b) {
+                if (r < 56 && g > 16 && b < 28) {
+                    return true;
+
+                }
+                return false;
+            });
+
+            // GREEN 129, 167, 129
+            tracking.ColorTracker.registerColor("green", function (r, g, b) {
+                if (r < 129 && g > 167 && b < 129) {
+                    return true;
+
+                }
+                return false;
+            });
+
+            // GRAY 230, 228, 228
+            tracking.ColorTracker.registerColor("gray", function (r, g, b) {
+                if (r < 230 && g > 228 && b < 228) {
+                    return true;
+
+                }
+                return false;
+            });
+
+            // HAZEL 163, 127, 90
+            tracking.ColorTracker.registerColor("hazel", function (r, g, b) {
+                if (r < 163 && g > 127 && b < 90) {
+                    return true;
+
+                }
+                return false;
+            });
+
+            tracking.track('#video', tracker, { camera: true });
+
+
+            tracker.on('track', function (event) {
+                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                event.data.forEach(function (rect) {
+                    if (rect.color === 'custom') {
+                        rect.color = tracker.customColor;
+                    }
+
+                    context.strokeStyle = rect.color;
+                    context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+                    context.font = '12px Helvetica';
+                    context.fillStyle = "#fff";
+                    context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+                    context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+                    // console.log(rect.color);
+
+                    if (rect.color === 'brown') {
+
+                    }
+                });
+
+            });
+
+            initGUIControllers(tracker);
+
+        };
+    </script>
+
 </body>
 
 </html>
