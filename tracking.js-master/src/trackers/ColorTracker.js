@@ -7,16 +7,18 @@
    * @extends {tracking.Tracker}
    */
   tracking.ColorTracker = function(opt_colors) {
-    tracking.ColorTracker.base(this, 'constructor');
+    tracking.ColorTracker.base(this, "constructor");
 
-    if (typeof opt_colors === 'string') {
+    if (typeof opt_colors === "string") {
       opt_colors = [opt_colors];
     }
 
     if (opt_colors) {
       opt_colors.forEach(function(color) {
         if (!tracking.ColorTracker.getColor(color)) {
-          throw new Error('Color not valid, try `new tracking.ColorTracker("magenta")`.');
+          throw new Error(
+            'Color not valid, try `new tracking.ColorTracker("magenta")`.'
+          );
         }
       });
       this.setColors(opt_colors);
@@ -68,7 +70,7 @@
    * @default ['magenta']
    * @type {Array.<string>}
    */
-  tracking.ColorTracker.prototype.colors = ['magenta'];
+  tracking.ColorTracker.prototype.colors = ["magenta"];
 
   /**
    * Holds the minimum dimension to classify a rectangle.
@@ -79,11 +81,10 @@
 
   /**
    * Holds the maximum dimension to classify a rectangle.
-   * @default Infinity
+   * @default 40
    * @type {number}
    */
-  tracking.ColorTracker.prototype.maxDimension = Infinity;
-
+  tracking.ColorTracker.prototype.maxDimension = 40;
 
   /**
    * Holds the minimum group size to be classified as a rectangle.
@@ -102,7 +103,10 @@
    *     the blog extracted from the cloud points.
    * @private
    */
-  tracking.ColorTracker.prototype.calculateDimensions_ = function(cloud, total) {
+  tracking.ColorTracker.prototype.calculateDimensions_ = function(
+    cloud,
+    total
+  ) {
     var maxx = -1;
     var maxy = -1;
     var minx = Infinity;
@@ -210,7 +214,18 @@
       intersects = true;
       for (var s = r + 1; s < rects.length; s++) {
         var r2 = rects[s];
-        if (tracking.Math.intersectRect(r1.x, r1.y, r1.x + r1.width, r1.y + r1.height, r2.x, r2.y, r2.x + r2.width, r2.y + r2.height)) {
+        if (
+          tracking.Math.intersectRect(
+            r1.x,
+            r1.y,
+            r1.x + r1.width,
+            r1.y + r1.height,
+            r2.x,
+            r2.y,
+            r2.x + r2.width,
+            r2.y + r2.height
+          )
+        ) {
           intersects = false;
           var x1 = Math.min(r1.x, r2.x);
           var y1 = Math.min(r1.y, r2.y);
@@ -280,7 +295,9 @@
     var colors = this.getColors();
 
     if (!colors) {
-      throw new Error('Colors not specified, try `new tracking.ColorTracker("magenta")`.');
+      throw new Error(
+        'Colors not specified, try `new tracking.ColorTracker("magenta")`.'
+      );
     }
 
     var results = [];
@@ -289,7 +306,7 @@
       results = results.concat(self.trackColor_(pixels, width, height, color));
     });
 
-    this.emit('track', {
+    this.emit("track", {
       data: results
     });
   };
@@ -304,7 +321,12 @@
    * @param {string} color The color to be found
    * @private
    */
-  tracking.ColorTracker.prototype.trackColor_ = function(pixels, width, height, color) {
+  tracking.ColorTracker.prototype.trackColor_ = function(
+    pixels,
+    width,
+    height,
+    color
+  ) {
     var colorFn = tracking.ColorTracker.knownColors_[color];
     var currGroup = new Int32Array(pixels.length >> 2);
     var currGroupSize;
@@ -345,7 +367,17 @@
           currI = queue[queuePosition--];
           currW = queue[queuePosition--];
 
-          if (colorFn(pixels[currW], pixels[currW + 1], pixels[currW + 2], pixels[currW + 3], currW, currI, currJ)) {
+          if (
+            colorFn(
+              pixels[currW],
+              pixels[currW + 1],
+              pixels[currW + 2],
+              pixels[currW + 3],
+              currW,
+              currI,
+              currJ
+            )
+          ) {
             currGroup[currGroupSize++] = currJ;
             currGroup[currGroupSize++] = currI;
 
@@ -353,7 +385,13 @@
               var otherW = currW + neighboursW[k];
               var otherI = currI + neighboursI[k];
               var otherJ = currJ + neighboursJ[k];
-              if (!marked[otherW] && otherI >= 0 && otherI < height && otherJ >= 0 && otherJ < width) {
+              if (
+                !marked[otherW] &&
+                otherI >= 0 &&
+                otherI < height &&
+                otherJ >= 0 &&
+                otherJ < width
+              ) {
                 queue[++queuePosition] = otherW;
                 queue[++queuePosition] = otherI;
                 queue[++queuePosition] = otherJ;
@@ -380,46 +418,45 @@
   // Default colors
   //===================
 
-  tracking.ColorTracker.registerColor('cyan', function(r, g, b) {
+  tracking.ColorTracker.registerColor("cyan", function(r, g, b) {
     var thresholdGreen = 50,
       thresholdBlue = 70,
       dx = r - 0,
       dy = g - 255,
       dz = b - 255;
 
-    if ((g - r) >= thresholdGreen && (b - r) >= thresholdBlue) {
+    if (g - r >= thresholdGreen && b - r >= thresholdBlue) {
       return true;
     }
     return dx * dx + dy * dy + dz * dz < 6400;
   });
 
-  tracking.ColorTracker.registerColor('magenta', function(r, g, b) {
+  tracking.ColorTracker.registerColor("magenta", function(r, g, b) {
     var threshold = 50,
       dx = r - 255,
       dy = g - 0,
       dz = b - 255;
 
-    if ((r - g) >= threshold && (b - g) >= threshold) {
+    if (r - g >= threshold && b - g >= threshold) {
       return true;
     }
     return dx * dx + dy * dy + dz * dz < 19600;
   });
 
-  tracking.ColorTracker.registerColor('yellow', function(r, g, b) {
+  tracking.ColorTracker.registerColor("yellow", function(r, g, b) {
     var threshold = 50,
       dx = r - 255,
       dy = g - 255,
       dz = b - 0;
 
-    if ((r - b) >= threshold && (g - b) >= threshold) {
+    if (r - b >= threshold && g - b >= threshold) {
       return true;
     }
     return dx * dx + dy * dy + dz * dz < 10000;
   });
 
-
   // Caching neighbour i/j offset values.
   //=====================================
   var neighboursI = new Int32Array([-1, -1, 0, 1, 1, 1, 0, -1]);
   var neighboursJ = new Int32Array([0, 1, 1, 1, 0, -1, -1, -1]);
-}());
+})();

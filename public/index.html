@@ -3,111 +3,38 @@
 
 <head>
     <meta charset="utf-8">
-    <title>tracking.js - color with camera</title>
+    <title>AEye Poet</title>
     <link rel="stylesheet" href="./stylesheets/style.css">
-
-    <script src="../node_modules/tracking/build/tracking.js"></script>
-    <script src="../node_modules/dat.gui/build/dat.gui.min.js"></script>
-    <script src="../tracking.js-master/examples/assets/stats.min.js"></script>
-    <script src="../tracking.js-master/examples/assets/color_camera_gui.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:700&display=swap" rel="stylesheet">
+    <!-- LOAD TRACKING JS SCRIPTS -->
+    <script src="../tracking.js-master/build/tracking.js"></script>
+    <script src="../node_modules/dat.gui/build/dat.gui.js"></script>
     <script src="../tracking.js-master/build/data/eye.js"></script>
+    <script src="../tracking.js-master/build/data/face.js"></script>
+    <script src="../tracking.js-master/examples/assets/color_camera_gui.js"></script>
+    <!-- LOAD P5 + P5BOTS + P5SERIAL PORT SCRIPTS -->
+    <script language="javascript" type="text/javascript" src="p5.js"></script>
+    <!-- <script language="javascript" type="text/javascript" src="https://cdn.socket.io/socket.io-1.3.5.js"></script> -->
+    <!-- <script language="javascript" type="text/javascript" src="../p5bots-master/lib/p5bots.js"></script> -->
+    <script language="javascript" type="text/javascript" src="p5.serialport.js"></script>
+    <!-- <script language="javascript" type="text/javascript" src="../p5bots-master/src/p5bots-server/app.js"></script> -->
+    <!-- LOAD SOURCE CODE SCRIPT-->
+    <script src="script.js"></script>
+
 </head>
 
 <body>
 
     <div class="demo-frame">
         <div class="demo-container">
-            <video id="video" width="600" height="450" preload autoplay loop muted controls></video>
-            <canvas id="canvas" width="600" height="450"></canvas>
+            <video id="video" width="800" height="650" preload autoplay loop muted controls></video>
+            <canvas id="canvas" width="800" height="650"></canvas>
         </div>
     </div>
 
-    <script>
-        window.onload = function () {
-            navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(function (stream) {
-                document.getElementById('video').srcObject = stream;
-            });
-
-            var canvas = document.getElementById('canvas');
-            var context = canvas.getContext('2d');
-
-            var tracker = new tracking.ColorTracker();
-            // BLUE
-            tracking.ColorTracker.registerColor("blue", function (r, g, b) {
-                if (r < 161 && g > 202 && b < 241) {
-                    return true;
-                    console.log('blue');
-
-                }
-                return false;
-            });
-
-            // BROWN 56, 16, 28
-            tracking.ColorTracker.registerColor("brown", function (r, g, b) {
-                if (r < 56 && g > 16 && b < 28) {
-                    return true;
-
-                }
-                return false;
-            });
-
-            // GREEN 129, 167, 129
-            tracking.ColorTracker.registerColor("green", function (r, g, b) {
-                if (r < 129 && g > 167 && b < 129) {
-                    return true;
-
-                }
-                return false;
-            });
-
-            // GRAY 230, 228, 228
-            tracking.ColorTracker.registerColor("gray", function (r, g, b) {
-                if (r < 230 && g > 228 && b < 228) {
-                    return true;
-
-                }
-                return false;
-            });
-
-            // HAZEL 163, 127, 90
-            tracking.ColorTracker.registerColor("hazel", function (r, g, b) {
-                if (r < 163 && g > 127 && b < 90) {
-                    return true;
-
-                }
-                return false;
-            });
-
-            tracking.track('#video', tracker, { camera: true });
-
-
-            tracker.on('track', function (event) {
-                context.clearRect(0, 0, canvas.width, canvas.height);
-
-                event.data.forEach(function (rect) {
-                    if (rect.color === 'custom') {
-                        rect.color = tracker.customColor;
-                    }
-
-                    context.strokeStyle = rect.color;
-                    context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-                    context.font = '12px Helvetica';
-                    context.fillStyle = "#fff";
-                    context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
-                    context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
-                    // console.log(rect.color);
-
-                    if (rect.color === 'brown') {
-
-                    }
-                });
-
-            });
-
-            initGUIControllers(tracker);
-
-        };
-    </script>
+    <div class="title">
+        <p>AEYE POET</p>
+    </div>
 
 </body>
 
