@@ -8,7 +8,7 @@ Once detected, it will send a signal to the adafruit thermal printer through [p5
 
 
 Libraries/Tools:
-Tracking.js
-p5.js
-p5-serial
-Arudino
+* Tracking.js
+* p5.js
+* p5-serial
+* Arudino
