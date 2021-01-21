@@ -19,7 +19,7 @@
     "node.js": "0.0.0",
     "p5.serialserver": "file:p5.serialport-master",
     "serialport": "^8.0.5",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.4.0",
     "tracking": "^1.1.3",
     "ws": "^7.2.0"
   }
